@@ -82,3 +82,5 @@ describe("extractCompanyDomain", () => {
     expect(extractCompanyDomain("user@domain@extra.com")).toBe("domain");
   });
 });
+
+describe("getUsersFromDatabase", () => {});
