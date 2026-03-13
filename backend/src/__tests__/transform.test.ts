@@ -1,64 +1,112 @@
-import { describe, it, expect } from 'vitest';
-import { transformUserData } from '../index';
+import { describe, it, expect } from "vitest";
+import { transformUserData, extractCompanyDomain, getUsersFromDatabase } from "../index";
 
-describe('transformUserData', () => {
-  it('should transform user object by splitting full name into first and last name', () => {
+describe("transformUserData", () => {
+  it("should transform user object by splitting full name into first and last name", () => {
     const mockUser = {
       id: 1,
-      name: 'Alice Johnson',
-      email: 'alice@example.com',
+      name: "Alice Johnson",
+      email: "alice@example.com",
     };
 
     const result = transformUserData(mockUser);
 
     expect(result).toEqual({
       id: 1,
-      first_name: 'Alice',
-      last_name: 'Johnson',
-      email: 'alice@example.com',
+      first_name: "Alice",
+      last_name: "Johnson",
+      email: "alice@example.com",
     });
   });
 
-  it('should handle single name correctly', () => {
+  it("should handle single name correctly", () => {
     const mockUser = {
       id: 2,
-      name: 'Bob',
-      email: 'bob@example.com',
+      name: "Bob",
+      email: "bob@example.com",
     };
 
     const result = transformUserData(mockUser);
 
-    expect(result.first_name).toBe('Bob');
+    expect(result.first_name).toBe("Bob");
     expect(result.last_name).toBe(undefined);
     expect(result.id).toBe(2);
-    expect(result.email).toBe('bob@example.com');
+    expect(result.email).toBe("bob@example.com");
   });
 
-  it('should preserve id and email fields', () => {
+  it("should preserve id and email fields", () => {
     const mockUser = {
       id: 999,
-      name: 'Carol Williams',
-      email: 'carol.williams@example.com',
+      name: "Carol Williams",
+      email: "carol.williams@example.com",
     };
 
     const result = transformUserData(mockUser);
 
     expect(result.id).toBe(999);
-    expect(result.email).toBe('carol.williams@example.com');
+    expect(result.email).toBe("carol.williams@example.com");
   });
 
-  it('should have correct property names in output', () => {
+  it("should have correct property names in output", () => {
     const mockUser = {
       id: 1,
-      name: 'Test User',
-      email: 'test@example.com',
+      name: "Test User",
+      email: "test@example.com",
     };
 
     const result = transformUserData(mockUser);
 
-    expect(result).toHaveProperty('id');
-    expect(result).toHaveProperty('first_name');
-    expect(result).toHaveProperty('last_name');
-    expect(result).toHaveProperty('email');
+    expect(result).toHaveProperty("id");
+    expect(result).toHaveProperty("first_name");
+    expect(result).toHaveProperty("last_name");
+    expect(result).toHaveProperty("email");
+  });
+});
+
+describe("extractCompanyDomain", () => {
+  it("should extract domain from a standard email", () => {
+    expect(extractCompanyDomain("alice@example.com")).toBe("example.com");
+  });
+
+  it("should extract domain from a subdomain email", () => {
+    expect(extractCompanyDomain("bob@mail.company.org")).toBe(
+      "mail.company.org",
+    );
+  });
+
+  it("should return undefined for an email with no @", () => {
+    expect(extractCompanyDomain("invalidemail")).toBeUndefined();
+  });
+
+  it("should handle multiple @ symbols and return the part after the first", () => {
+    expect(extractCompanyDomain("user@domain@extra.com")).toBe("domain");
+  });
+});
+
+describe("getUsersFromDatabase", () => {
+  it("should return an array of users", () => {
+    const users = getUsersFromDatabase();
+    expect(Array.isArray(users)).toBe(true);
+  });
+
+  it("should return users with id, name, and email fields", () => {
+    const users = getUsersFromDatabase();
+    users.forEach((user) => {
+      expect(user).toHaveProperty("id");
+      expect(user).toHaveProperty("name");
+      expect(user).toHaveProperty("email");
+    });
+  });
+
+  it("should return the correct number of users", () => {
+    const users = getUsersFromDatabase();
+    expect(users.length).toBe(3);
+  });
+
+  it("should return users with valid email addresses", () => {
+    const users = getUsersFromDatabase();
+    users.forEach((user) => {
+      expect(user.email).toContain("@");
+    });
   });
 });

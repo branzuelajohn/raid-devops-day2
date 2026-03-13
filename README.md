@@ -1,4 +1,4 @@
-# raid-devops-day2
+# raid-devops-day2 john alec
 
 A simple full-stack project with a React frontend and TypeScript backend.
 
