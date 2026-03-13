@@ -1,4 +1,12 @@
 services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - "3001:3001"
+    restart: unless-stopped
+
   frontend:
     build:
       context: ./frontend
@@ -6,3 +14,5 @@ services:
     ports:
       - "5173:5173"
     restart: unless-stopped
+    depends_on:
+      - backend
